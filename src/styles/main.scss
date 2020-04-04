@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap");
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+:root {
+  --fw-light: 300;
+  --fw-normal: 400;
+  --fw-semi: 500;
+  --fw-bold: 700;
+  --fz-h1: 1.5rem;
+  --fz-h2: 2.25rem;
+  --fz-body: 1rem;
+  --fz-xl: 4.5rem;
+  --cl-light: #fff;
+  --cl-gray: #989898;
+  --cl-dark: #444;
+  --cl-accent: #d06d6d;
+  --cl-accent-dark: #613131;
+}
+
+.sr-only:not(:focus):not(:active) {
+  overflow: hidden; // remove scroll, remove overflown
+  white-space: nowrap; // prevent wrapping (might create height)
+
+  // clip only applies to abs-positioned elements (abs|fixed)
+  position: absolute; // for clip to work
+  clip: rect(0 0 0 0); // clips instead of removing by hidden
+  clip-path: inset(50%); // works same as above, but more browser support
+
+  // clip fallback
+  height: 1px; // almost-remove (but don't)
+  width: 1px;
+}
+
+body {
+  margin: 0;
+  background-image: url(../images/mars.jpg);
+  background-size: cover;
+
+  font-family: "Montserrat", sans-serif;
+  color: var(--cl-light);
+  line-height: 1.6; // taller
+
+  // only because it's an SPA!
+  height: 100vh;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1; // need shorter line-height for titles
+}
+
+a {
+  color: var(--cl-accent);
+
+  &:hover {
+    color: var(--cl-accent-dark);
+  }
+}
+
+.main-title {
+  font-size: var(--fz-h1);
+  font-weight: var(--fw-light);
+  text-transform: uppercase;
+  color: var(--cl-accent);
+  letter-spacing: 2px; // nice with headings
+  grid-column: 1 / -1; // whole row
+}
+
+.section-title {
+  font-size: var(--fz-h2);
+  font-weight: var(--fw-bold);
+  margin: 0; // text block elems have default margin-top|bottom : 1em
+}
+
+.section-title--date {
+  font-size: var(--fz-xl);
+}
+
+.reading {
+  font-size: var(--fz-h1);
+  margin: 0;
+  color: var(--cl-gray);
+}
+
+// main
+.mars-current-weather {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2em;
+  max-width: 1000px;
+  margin: 4em 0 0 4em; // ! not centering
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2em;
+}
+
+.date {
+  grid-column: 1 / 2;
+  &__day {
+    font-size: var(--fz-h2);
+    margin: 0;
+    color: var(--cl-gray);
+    font-weight: var(--fw-light);
+  }
+}
+
+.temp {
+  // local CSS variable
+  --border: solid 0.25em var(--cl-accent-dark);
+  grid-column: 2 / 3;
+  border-left: var(--border);
+  border-right: var(--border);
+  // same as grid 'gap' to be consistent with the space before & after temp section.
+  padding: 0 2em;
+}
+
+.wind {
+  grid-column: 3 / 4;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  align-self: start; // title and reading takes only the heights they need and align to the start of column
+  grid-template-rows: min-content 1fr; // 1st row(wind) will take the smallest possible space.
+
+  .section-title,
+  .reading {
+    grid-column: 2 / 3;
+  }
+
+  &__direction {
+    // make it span two rows created by assigning the same columns to title and reading
+    grid-row: 1 / span 2; // you can't have 1 / -1 here because we didn't predefine grid-template-rows
+    /* If you want circle | square this makes it easier to adjust the value in one place. */
+    --size: 6rem; // circle diameter
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: grid;
+    // when centering with grid:
+    place-items: center; // this will put arrow 1.5rem from the top
+  }
+
+  &__arrow {
+    /* update custom props with js to update the direction */
+    --direction: 0deg;
+    --size: 1rem;
+    // height: 3rem;
+    height: calc(
+      var(--size) * 3
+    ); // You can't use scss variable inside css functions (calc)
+    width: var(--size);
+    background: var(--cl-accent-dark);
+    // first point, second point, third point, ...
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    transform: translateY(-50%) // 50% of 3rem = 1.5rem to the top
+      rotate(var(--direction));
+    transform-origin: bottom center;
+  }
+}
+
+.info {
+  grid-column: 1 / 3;
+}
+
+.unit-toggle {
+  grid-column: 3 / 4;
+}
