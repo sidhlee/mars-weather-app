@@ -177,4 +177,66 @@ a {
 .unit {
   grid-column: 3 / 4;
   place-self: end;
+  color: var(--cl-light);
+  display: flex;
+  opacity: 0.7;
+  transition: opacity 275ms linear; // opacity works better with linear
+
+  &:hover {
+    opacity: 1;
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  /* 
+  because .sr-only is turned off on "focus" and "active" state, 
+  we couldn't add that class to the radio inputs.
+  Instead, we are directly applying all those rules to the input element here
+  so that it stays that way the whole time.
+  */
+  input {
+    overflow: hidden; // remove scroll, remove overflown
+    white-space: nowrap; // prevent wrapping (might create height)
+
+    // clip only applies to abs-positioned elements (abs|fixed)
+    position: absolute; // for clip to work
+    clip: rect(0 0 0 0); // clips instead of removing by hidden
+    clip-path: inset(50%); // works same as above, but more browser support
+
+    // clip fallback
+    height: 1px; // almost-remove (but don't)
+    width: 1px;
+  }
+
+  // toggle button
+  &__toggle {
+    cursor: pointer;
+    width: 4em;
+    border: 2px solid var(--cl-light);
+    background: transparent;
+    padding: 0;
+    margin: 0 1em;
+    border-radius: 100vmax; // this is a pill-shaped border hack!
+    // circular toggle-switch
+    &::after {
+      content: "";
+      display: block;
+      background: var(--cl-light);
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      margin: 3px;
+      margin-left: auto;
+    }
+  }
+
+  // First select any checked input element(radio|checkbox)
+  // then select its following siblings with .unit_-toggle class,
+  // (NOTE: when "fah" is selected, there is no "following" element with .unit__toggle class)
+  // then select its ::after pseudo-element
+  :checked ~ .unit__toggle::after {
+    margin-left: 3px; // This is applied only when "cel" is selected
+  }
 }

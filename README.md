@@ -127,3 +127,30 @@ Using css variable, you can update clock needle very easily.
   transform-origin: bottom center;
 }
 ```
+
+## Pill-shaped Border
+
+`border-radius: 50%` will give oval-shape and that is most-likely not what you want.
+
+```scss
+  &__toggle {
+    cursor: pointer;
+    width: 4em;
+    border: 2px solid var(--cl-gray);
+    background: transparent;
+    padding: 0;
+    margin: 0 1em;
+    border-radius: 100vmax; // can be replace by any arbitrary large unit(999999px)
+    // circular toggle-switch
+    &::after {
+      content: "";
+      display: block;
+      background: var(--cl-gray);
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      margin: 3px;
+    }
+  }
+}
+```
