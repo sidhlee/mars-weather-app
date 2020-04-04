@@ -240,3 +240,125 @@ a {
     margin-left: 3px; // This is applied only when "cel" is selected
   }
 }
+
+.previous-weather {
+  background: var(--cl-light);
+  color: var(--cl-dark);
+  position: absolute;
+  bottom: 0; // make the end of the content ouch the bottom of the screen
+  width: 100%; // now it will cover the whole screen!
+  transform: translateY(60%);
+  transition: transform 350ms ease;
+  padding: 3rem; // using rem here because we will use this value to calc transY drawer toggler
+}
+
+.show-previous-weather {
+  position: absolute;
+  // background: limegreen; // so that we can see while working on it
+  background: var(--cl-light);
+  width: 10rem;
+  left: 50%;
+  // using 3em will not work here because its actual size is different across sections
+  transform: translate(
+    -50%,
+    calc(-100% - 3rem)
+  ); // make it centered, and raise it up 100%
+  text-align: center;
+  font-size: var(--fz-h2);
+  line-height: 1; // make it easier to control (removes space at the bottom)
+  clip-path: polygon(
+    50% 0,
+    0 100%,
+    100% 100%
+  ); // center-top, left-bottom, right-bottom;
+  cursor: pointer;
+  color: var(--cl-gray); // to make it less in-the-face
+  border: 0;
+
+  font-family: inherit; // button elements don't inherit ff :(
+  &:hover,
+  &:focus {
+    color: var(--cl-dark);
+  }
+
+  span {
+    display: block;
+    transform: rotate(0);
+    // transition: transform 300ms ease; not a fan :p
+  }
+}
+
+.previous-days {
+  display: flex; // line all items along the x-axis!
+  justify-content: space-between;
+}
+
+.previous-weather__title {
+  text-align: center;
+}
+
+.previous-day {
+  opacity: 0;
+
+  & > * {
+    margin: 0; // put all sub-elements close together
+  }
+
+  // transition: opacity 750ms linear;
+  &__date {
+    font-size: 0.9rem;
+    color: var(--cl-gray);
+  }
+
+  &__more-info {
+    cursor: pointer;
+    border: 0;
+    border-radius: 100vmax;
+    background: var(--cl-dark);
+    color: var(--cl-light);
+    text-transform: uppercase;
+    padding: 0.3em 1em;
+    margin-top: 1em;
+    &:hover {
+      background: var(--cl-gray);
+    }
+  }
+}
+
+.previous-weather.show-weather {
+  transform: translateY(0);
+  .show-previous-weather span {
+    display: block;
+    transform: rotate(180deg) translateY(-6px);
+  }
+  .previous-day {
+    // opacity: 1;
+
+    // Adding extra layer of translate animation with slower duration
+    // to aid little abrupt .previous-weather__title movement.
+    animation: slideUpIn 750ms forwards;
+  }
+
+  .previous-weather__title {
+    text-align: left;
+  }
+
+  @for $i from 1 through 7 {
+    .previous-day:nth-child(#{$i}) {
+      animation-delay: calc(75ms + 25 * #{$i}ms);
+    }
+  }
+}
+
+// we're creating keyframes to animate
+@keyframes slideUpIn {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
