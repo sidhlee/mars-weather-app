@@ -8,7 +8,70 @@
 </head>
 
 <body>
-  h1{Hello}
+
+  <main class="mars-current-weather">
+    <h1 class="main-title">Latest weather at Elysium Plantitia</h1>
+    <div class="date">
+      <h2 class="section-title section-title--date">Sol 377</h2>
+      <!-- Placeholder needs to be the longest one from available values (!June)-->
+      <p class="date__day">September 18</p>
+    </div>
+    <div class="temp">
+      <h2 class="section-title">Temperature</h2>
+      <p class="reading">High: -20°C</p>
+      <p class="reading">Low: -120°C</p>
+    </div>
+    <div class="wind">
+      <h2 class="section-title">Wind</h2>
+      <p class="reading">75 kph</p>
+      <div class="wind__direction">
+        <!-- circle -->
+        <p class="sr-only">45deg</p>
+        <!-- pointer -->
+        <div class="wind__arrow"></div>
+      </div>
+    </div>
+
+    <div class="info">
+      <p>InSight is taking daily weather measurements (temperature, wind, pressure) on the surface of Mars at Elysium
+        Plantitia, a, flat, sooth plain near Mars' equator.</p>
+      <p>This is only a part of InSight;s mission. <a href="https://mars.nasa.gov/insight/mission/overview">Click
+          here</a>
+        to find out more.</p>
+    </div>
+
+    <button class="unit">
+      <label for="cel">°C</label>
+      <input type="radio" id="cel" name="unit" checked>
+      <!-- when unit__toggle is clicked checkbox needs to switch -->
+      <button class="unit__toggle"></button>
+
+      <label for="fah">°F</label>
+      <input type="radio" id="fah" name="unit">
+      </div>
+
+  </main>
+
+  <div class="previous-weather">
+    <label for="weather-toggle" class="show-previous-weather-label">&#8593;
+      <span class="sr-only">Show previous
+        weather</span></label>
+    <input type="checkbox" id="weather-toggle" class="show-previous-weather-toggle">
+
+    <h2 class="main-title">Previous 7 days</h2>
+
+    <div class="previous-days">
+      <div class="previous-day">
+        <h3 class="previous-day__sol">Sol 371</h3>
+        <p class="previous-day__date">September 31</p>
+        <p class="previous-day__temp">High: -20°C</p>
+        <p class="previous-day__temp">Low: -120°C</p>
+        <button class="previous-day_more-info">more info</button>
+      </div>
+    </div>
+
+  </div>
+
   <script src="index.js"></script>
 </body>
 
