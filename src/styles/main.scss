@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap');
 
 html {
   box-sizing: border-box;
@@ -45,7 +45,7 @@ body {
   background-image: url(../images/mars.jpg);
   background-size: cover;
 
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   color: var(--cl-light);
   line-height: 1.6; // taller
 
@@ -167,6 +167,7 @@ a {
     transform: translateY(-50%) // 50% of 3rem = 1.5rem to the top
       rotate(var(--direction));
     transform-origin: bottom center;
+    transition: transform 350ms linear;
   }
 }
 
@@ -221,7 +222,7 @@ a {
     border-radius: 100vmax; // this is a pill-shaped border hack!
     // circular toggle-switch
     &::after {
-      content: "";
+      content: '';
       display: block;
       background: var(--cl-light);
       height: 1rem;
@@ -250,6 +251,7 @@ a {
   transform: translateY(60%);
   transition: transform 350ms ease;
   padding: 3rem; // using rem here because we will use this value to calc transY drawer toggler
+  border-top: 1px solid var(--cl-light); // remove thin line at the bottom of drawer toggler. (background image shows through tiny gap)
 }
 
 .show-previous-weather {
@@ -273,8 +275,7 @@ a {
   ); // center-top, left-bottom, right-bottom;
   cursor: pointer;
   color: var(--cl-gray); // to make it less in-the-face
-  border: 0;
-
+  border: none;
   font-family: inherit; // button elements don't inherit ff :(
   &:hover,
   &:focus {
@@ -288,13 +289,51 @@ a {
   }
 }
 
+.previous-weather__title {
+  text-align: center;
+}
+
+.previous-weather.show-weather {
+  transform: translateY(0);
+  .show-previous-weather span {
+    display: block;
+    transform: rotate(180deg) translateY(-6px);
+  }
+  .previous-day {
+    // opacity: 1;
+
+    // Adding extra layer of translate animation with slower duration
+    // to aid little abrupt .previous-weather__title movement.
+    animation: slideUpIn 750ms forwards;
+  }
+
+  .previous-weather__title {
+    text-align: left;
+  }
+  // create sequential animation with layered delay.
+  @for $i from 1 through 7 {
+    .previous-day:nth-child(#{$i}) {
+      animation-delay: calc(75ms + 25 * #{$i}ms);
+    }
+  }
+}
+
+// we're creating keyframes to animate
+@keyframes slideUpIn {
+  0% {
+    opacity: 0;
+    transform: translateY(50%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .previous-days {
   display: flex; // line all items along the x-axis!
   justify-content: space-between;
-}
-
-.previous-weather__title {
-  text-align: center;
 }
 
 .previous-day {
@@ -322,43 +361,5 @@ a {
     &:hover {
       background: var(--cl-gray);
     }
-  }
-}
-
-.previous-weather.show-weather {
-  transform: translateY(0);
-  .show-previous-weather span {
-    display: block;
-    transform: rotate(180deg) translateY(-6px);
-  }
-  .previous-day {
-    // opacity: 1;
-
-    // Adding extra layer of translate animation with slower duration
-    // to aid little abrupt .previous-weather__title movement.
-    animation: slideUpIn 750ms forwards;
-  }
-
-  .previous-weather__title {
-    text-align: left;
-  }
-
-  @for $i from 1 through 7 {
-    .previous-day:nth-child(#{$i}) {
-      animation-delay: calc(75ms + 25 * #{$i}ms);
-    }
-  }
-}
-
-// we're creating keyframes to animate
-@keyframes slideUpIn {
-  0% {
-    opacity: 0;
-    transform: translateY(50%);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

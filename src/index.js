@@ -12,132 +12,33 @@ const currentTempHighElement = document.querySelector(
 const currentTempLowElement = document.querySelector('[data-current-temp-low]');
 const windSpeedElement = document.querySelector('[data-wind-speed]');
 const windDirectionText = document.querySelector('[data-wind-direction-text]');
-const windDirectionArrow = document.querySelector(
+const windDirectionArrowElement = document.querySelector(
   '[data-wind-direction-arrow]'
 );
+// unit toggle switch
+const unitToggle = document.querySelector('[data-unit-toggle');
+const metricRadioElement = document.getElementById('cel');
+const imperialRadioElement = document.getElementById('fah');
 
 // DOM selectors: next 7 days
 const previousWeatherToggle = document.querySelector('.show-previous-weather');
-const previousWeather = document.querySelector('.previous-weather');
+const previousWeatherSection = document.querySelector('.previous-weather');
 
 const previousSolTemplate = document.querySelector(
   '[data-previous-sol-template]'
 );
 const previousSolContainer = document.querySelector('[data-previous-sols]');
 
-const unitToggle = document.querySelector('[data-unit-toggle');
-const metricRadioElement = document.getElementById('cel');
-const imperialRadioElement = document.getElementById('fah');
-
 // Add listener to bottom-drawer toggler
 previousWeatherToggle.addEventListener('click', () => {
-  previousWeather.classList.toggle('show-weather');
+  previousWeatherSection.classList.toggle('show-weather');
 });
 
-/**
- * get the index of most recent sol data and store it in a global variable
- */
-let selectedSolIndex;
-getWeather().then((sols) => {
-  selectedSolIndex = sols.length - 1;
-  // render
-  displaySelectedSol(sols);
-  displayPreviousSols(sols);
-  updateUnits();
-  // Add click  handler to unit toggle button
-  unitToggle.addEventListener('click', () => {
-    let metricUnits = !isMetric(); // true if metric radio is checked + negate result
-    metricRadioElement.checked = metricUnits;
-    imperialRadioElement.checked = !metricUnits;
-    // rerender
-    displaySelectedSol(sols);
-    displayPreviousSols(sols);
-    updateUnits();
-  });
-
-  metricRadioElement.addEventListener('change', () => {
-    // rerender
-    displaySelectedSol(sols);
-    displayPreviousSols(sols);
-    updateUnits();
-  });
-  imperialRadioElement.addEventListener('change', () => {
-    // rerender
-    displaySelectedSol(sols);
-    displayPreviousSols(sols);
-    updateUnits();
-  });
-});
-
-/**
- * Display Sol data to the corresponding DOM node.
- * @param {Array} sols - an array containing sol objects
- */
-function displaySelectedSol(sols) {
-  const selectedSol = sols[selectedSolIndex];
-  currentSolElement.innerText = selectedSol.sol;
-
-  currentDateElement.innerText = displayDate(selectedSol.date);
-  currentTempHighElement.innerText = displayTemperature(selectedSol.maxTemp);
-  currentTempLowElement.innerText = displayTemperature(selectedSol.minTemp);
-  windSpeedElement.innerText = displaySpeed(selectedSol.windSpeed);
-  windDirectionText.innerText = selectedSol.windDirectionCardinal;
-  windDirectionArrow.style.setProperty(
-    '--direction',
-    selectedSol.windDirectionDegrees + 'deg'
-  );
-}
-
-function displayPreviousSols(sols) {
-  previousSolContainer.innerHTML = ''; // cleanup before populating
-  sols.forEach((solData, index) => {
-    // clones template content and assign it to solContainer
-    const solContainer = previousSolTemplate.content.cloneNode(true); // true: deep clone
-    // populate data into cloned element
-    solContainer.querySelector('[data-sol]').innerText = solData.sol;
-    solContainer.querySelector('[data-date]').innerText = displayDate(
-      solData.date
-    );
-    solContainer.querySelector(
-      '[data-temp-high]'
-    ).innerText = displayTemperature(solData.maxTemp);
-    solContainer.querySelector(
-      '[data-temp-low]'
-    ).innerText = displayTemperature(solData.minTemp);
-    // click handler on 'More Info'
-    solContainer
-      .querySelector('[data-select-button]')
-      .addEventListener('click', () => {
-        // update selectedSolIndex with solData index
-        selectedSolIndex = index;
-        // re-render main
-        displaySelectedSol(sols); // selects displaying sol entry with global: selectedSolIndex
-      });
-
-    // push populated element into container
-    previousSolContainer.appendChild(solContainer);
-  });
-}
-
-function displayDate(date) {
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long' });
-}
-
-function displayTemperature(temperature) {
-  let returnTemp = temperature;
-  if (!isMetric()) {
-    returnTemp = (temperature - 32) * (5 / 9);
-  }
-  return Math.round(returnTemp);
-}
-
-function displaySpeed(speed) {
-  let returnSpeed = speed;
-  if (!isMetric()) {
-    returnSpeed = speed / 1.609;
-  }
-  return Math.round(returnSpeed);
-}
+// Global state for selectedSolIndex.
+const state = {
+  selectedSolIndex: null,
+  isMetric: metricRadioElement.checked, // metric by default
+};
 
 /**
  * Fetch data and map it into objects of infos that we need.
@@ -163,18 +64,133 @@ function getWeather() {
     });
 }
 
+/**
+ * get the index of most recent sol data(last one) and store it in a global variable
+ */
+getWeather().then((sols) => {
+  // init state as last element (latest data)
+  state.selectedSolIndex = sols.length - 1;
+  // render
+  displaySelectedSol(sols);
+  displayPreviousSols(sols);
+  updateUnits();
+  // Add click  handler to unit toggle button
+  unitToggle.addEventListener('click', () => {
+    // let metricUnits = !isMetric(); // true if metric radio is checked + negate result
+    state.isMetric = !state.isMetric;
+    metricRadioElement.checked = state.isMetric;
+    imperialRadioElement.checked = !state.isMetric;
+    // rerender
+    displaySelectedSol(sols);
+    displayPreviousSols(sols);
+    updateUnits();
+  });
+
+  // Also re-render when user changes radio input value
+  metricRadioElement.addEventListener('change', () => {
+    // rerender
+    displaySelectedSol(sols);
+    displayPreviousSols(sols);
+    updateUnits();
+  });
+  imperialRadioElement.addEventListener('change', () => {
+    // rerender
+    displaySelectedSol(sols);
+    displayPreviousSols(sols);
+    updateUnits();
+  });
+});
+
+/**
+ * Display Sol data to the corresponding DOM node.
+ * @param {Array} sols - an array containing sol objects
+ */
+function displaySelectedSol(sols) {
+  const selectedSol = sols[state.selectedSolIndex];
+  // display selected Sol number
+  currentSolElement.innerText = selectedSol.sol;
+
+  currentDateElement.innerText = displayDate(selectedSol.date);
+  currentTempHighElement.innerText = displayTemperature(selectedSol.maxTemp);
+  currentTempLowElement.innerText = displayTemperature(selectedSol.minTemp);
+  windSpeedElement.innerText = displaySpeed(selectedSol.windSpeed);
+  windDirectionText.innerText = selectedSol.windDirectionCardinal;
+  // API data happens to be in very convenient format (deg) for styling
+  windDirectionArrowElement.style.setProperty(
+    '--direction',
+    selectedSol.windDirectionDegrees + 'deg'
+  );
+}
+
+function displayPreviousSols(sols) {
+  previousSolContainer.innerHTML = ''; // cleanup container before populating data
+  sols.forEach((solData, index) => {
+    // clones template content and assign it to solContainer
+    const solContainer = previousSolTemplate.content.cloneNode(true); // true: deep clone
+    // populate data into cloned element
+    solContainer.querySelector('[data-sol]').innerText = solData.sol;
+    solContainer.querySelector('[data-date]').innerText = displayDate(
+      solData.date
+    );
+    solContainer.querySelector(
+      '[data-temp-high]'
+    ).innerText = displayTemperature(solData.maxTemp);
+    solContainer.querySelector(
+      '[data-temp-low]'
+    ).innerText = displayTemperature(solData.minTemp);
+    // set click handler on 'More Info'
+    solContainer
+      .querySelector('[data-select-button]')
+      .addEventListener('click', () => {
+        // update selectedSolIndex with solData index
+        state.selectedSolIndex = index;
+        // re-render main
+        displaySelectedSol(sols); // selects displaying sol entry with global: selectedSolIndex
+      });
+
+    // push populated element into container
+    previousSolContainer.appendChild(solContainer);
+  });
+}
+
+/**
+ * Select all unit-related elements and set unit string in the DOM node accordingly
+ */
 function updateUnits() {
   const speedUnits = document.querySelectorAll('[data-speed-unit]');
   const tempUnits = document.querySelectorAll('[data-temp-unit]');
   speedUnits.forEach((unit) => {
-    unit.innerText = isMetric() ? 'kph' : 'mph';
+    unit.innerText = state.isMetric ? 'kph' : 'mph';
   });
   tempUnits.forEach((unit) => {
-    unit.innerText = isMetric() ? 'C' : 'F';
+    unit.innerText = state.isMetric ? 'C' : 'F';
   });
 }
 
-function isMetric() {
-  // true if metric radio input is checked
-  return metricRadioElement.checked;
+// =====format/ conversion functions ===================
+function displayDate(date) {
+  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long' });
 }
+
+function displayTemperature(temperature) {
+  let returnTemp = temperature;
+  if (!state.isMetric) {
+    returnTemp = (temperature - 32) * (5 / 9);
+  }
+  return Math.round(returnTemp);
+}
+
+function displaySpeed(speed) {
+  let returnSpeed = speed;
+  if (!state.isMetric) {
+    returnSpeed = speed / 1.609;
+  }
+  return Math.round(returnSpeed);
+}
+// ======================================================
+
+/* This is replaced with state */
+// function isMetric() {
+//   // true if metric radio input is checked
+//   return metricRadioElement.checked;
+// }
