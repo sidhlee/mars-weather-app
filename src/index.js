@@ -3,10 +3,13 @@ import "./styles/main.scss";
 const API_KEY = "DEMO_KEY";
 const API_URL = `https://api.nasa.gov/insight_weather/?api_key=${API_KEY}&feedtype=json&ver=1.0`;
 
-// For CSS dev purpose
+// DOM selectors
 const previousWeatherToggle = document.querySelector(".show-previous-weather");
 const previousWeather = document.querySelector(".previous-weather");
+const currentSolElement = document.querySelector("[data-current-sol]");
+const currentDateElement = document.querySelector("[data-current-date]");
 
+// Add listener to bottom-drawer toggler
 previousWeatherToggle.addEventListener("click", () => {
   previousWeather.classList.toggle("show-weather");
 });
@@ -24,7 +27,12 @@ getWeather().then((sols) => {
 
 function displaySelectedSol(sols) {
   const selectedSol = sols[selectedSolIndex];
-  console.log(selectedSol);
+  currentSolElement.innerText = selectedSol.sol;
+  const month = selectedSol.date.toString().split(" ")[1];
+  const day = selectedSol.date.toString().split(" ")[2];
+  // console.log(month);
+
+  currentDateElement.innerText = `${month} ${day}`;
 }
 
 /**
