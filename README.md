@@ -236,3 +236,42 @@ options.timeZoneName = 'short'; // long will be REALLY long
 console.log(date.toLocaleDateString(undefined, options));
 // → "Friday, December 31, 1999, UTC"
 ```
+
+## HTML Template element
+
+You can insert html template for data hydration inside `<template data-ny-template></template>`.
+Contents inside template element will not be rendered on page load.  
+You can clone the template content and hydrate them with data, then push it into a container div.
+
+```js
+function displayPreviousSols(sols) {
+  previousSolContainer.innerHTML = ''; // cleanup before populating
+  sols.forEach((solData, index) => {
+    // clones template content and assign it to solContainer
+    const solContainer = previousSolTemplate.content.cloneNode(true); // true: deep clone
+    // populate data into cloned element
+    solContainer.querySelector('[data-sol]').innerText = solData.sol;
+    solContainer.querySelector('[data-date]').innerText = displayDate(
+      solData.date
+    );
+    solContainer.querySelector(
+      '[data-temp-high]'
+    ).innerText = displayTemperature(solData.maxTemp);
+    solContainer.querySelector(
+      '[data-temp-low]'
+    ).innerText = displayTemperature(solData.minTemp);
+    // click handler on 'More Info'
+    solContainer
+      .querySelector('[data-select-button]')
+      .addEventListener('click', () => {
+        // update selectedSolIndex with solData index
+        selectedSolIndex = index;
+        // re-render main
+        displaySelectedSol(sols); // selects displaying sol entry with global: selectedSolIndex
+      });
+
+    // push populated element into container
+    previousSolContainer.appendChild(solContainer);
+  });
+}
+```
