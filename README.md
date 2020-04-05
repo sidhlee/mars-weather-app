@@ -1,5 +1,18 @@
 # Mars Weather App - HTML & CSS
 
+## Developing an App: User-oriented & cost-efficient workflow
+
+1. Find useful (free) API (eg. weather, market info, stats, map,...)
+2. How can that data make the user's life easier in doing...
+
+- It should help the process that the users already have been doing.  
+  You can't create "new thing" and make them to "learn" how to use it. (It is very inefficient in marketing perspective.)
+- Or it can help the user achieve the same goal in more efficient way OR with better experience.
+
+3. Create design concepts | sketch | mockups to better-achieve #2.
+4. Code up the design to better-achieve #2.
+5. Code up the functionality to better-achieve #2.
+
 ## Memo
 
 - HTML markup should be done in a way that it can be (though not as easily) understood and digested without any CSS.
@@ -153,4 +166,73 @@ Using css variable, you can update clock needle very easily.
     }
   }
 }
+```
+
+<br><br>
+
+# Mars Weather App - Fetching Data & Updating DOM with JS
+
+## Fetch and transform the data
+
+- Fetch from the API endpoint, specifying your API key in the URL string.
+- Parse response as JSON into JS Object
+- That object contains data entries in key:value format.
+  - Transform it intro an array with data entries Object containing properties inside each data entry value.
+  - The data entry key will also be transformed into one of the property values.
+
+## Prep DOM selectors
+
+```html
+<p class="item__price--large">Price: $<span data-current-price></span></p>
+```
+
+```js
+const currentPriceElement = document.querySelector('[data-current-price]']);
+```
+
+## Connect the data to the DOM node
+
+```js
+currentPriceElement.innerText = selectedItem.price;
+```
+
+- Sometime you need to update CSS variable instead of text node.
+
+```js
+windDirectionArrow.style.setProperty(
+  '--direction', // name of "CSS custom property"
+  selectedSol.windDirectionDegrees + 'deg' // value
+);
+```
+
+## Format the data to achieve the design goal
+
+1. Make it easier to understand for the users.
+2. Maximize 1. Then make it look nice and pleasing to the eye.
+3. Implement the most basic formatting like rounding/ flooring first.
+4. Introduce complex conversions gradually (temperature, speed, currency, date, etc...)
+
+### `Date.prototype.toLocaleDateString()`
+
+- Pass `undefined` as the first argument to use browser default locale
+
+```js
+// UTC y2k DOOM
+const date = new Date(Date.UTC(1999, 11, 31, 23, 59, 59));
+
+// request a weekday along with a long date
+const options = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
+console.log(date.toLocaleDateString('kor', options));
+// → "2000년 1월 1일 토요일" Korea will have its dooms day at 9AM on New Year (morning-calmly).
+
+// an application may want to use UTC and make that visible
+options.timeZone = 'UTC';
+options.timeZoneName = 'short'; // long will be REALLY long
+console.log(date.toLocaleDateString(undefined, options));
+// → "Friday, December 31, 1999, UTC"
 ```
