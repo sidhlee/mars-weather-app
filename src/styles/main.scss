@@ -15,10 +15,10 @@ html {
   --fw-normal: 400;
   --fw-semi: 500;
   --fw-bold: 700;
-  --fz-h1: 1.5rem;
-  --fz-h2: 2.25rem;
-  --fz-body: 1rem;
-  --fz-xl: 4.5rem;
+  --fz-h1: 1.25rem; // little smaller
+  --fz-h2: 1.75rem; // quite smaller
+  --fz-body: 1rem; // same
+  --fz-xl: 4rem; // tad smaller
   --cl-light: #fff;
   --cl-gray: #989898;
   --cl-dark: #444;
@@ -48,10 +48,9 @@ body {
   font-family: 'Montserrat', sans-serif;
   color: var(--cl-light);
   line-height: 1.6; // taller
-
-  // only because it's an SPA!
-  height: 100vh;
-  overflow: hidden;
+  // prevent repeating bg image towards the bottom
+  // happens when the content of the body is less than 100vh.
+  min-height: 100vh;
 }
 
 h1,
@@ -96,12 +95,8 @@ a {
 // main
 .mars-current-weather {
   background: rgba(0, 0, 0, 0.7);
-  padding: 2em;
+  padding: 6em 2em 2em;
   max-width: 1000px;
-  margin: 4em 0 0 4em; // ! not centering
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2em;
 }
 
 .date {
@@ -117,32 +112,28 @@ a {
 .temp {
   // local CSS variable
   --border: solid 0.25em var(--cl-accent-dark);
-  grid-column: 2 / 3;
-  border-left: var(--border);
-  border-right: var(--border);
-  // same as grid 'gap' to be consistent with the space before & after temp section.
-  padding: 0 2em;
+  padding: 2em 0;
 }
 
 .wind {
   grid-column: 3 / 4;
-
+  column-gap: 1em;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: min-content 1fr;
 
   align-self: start; // title and reading takes only the heights they need and align to the start of column
   grid-template-rows: min-content 1fr; // 1st row(wind) will take the smallest possible space.
 
   .section-title,
   .reading {
-    grid-column: 2 / 3;
+    grid-column: 1 / 2;
   }
 
   &__direction {
     // make it span two rows created by assigning the same columns to title and reading
     grid-row: 1 / span 2; // you can't have 1 / -1 here because we didn't predefine grid-template-rows
     /* If you want circle | square this makes it easier to adjust the value in one place. */
-    --size: 6rem; // circle diameter
+    --size: 4rem; // circle diameter
     width: var(--size);
     height: var(--size);
     border-radius: 50%;
@@ -150,12 +141,13 @@ a {
     display: grid;
     // when centering with grid:
     place-items: center; // this will put arrow 1.5rem from the top
+    grid-column: 2 / 3; // switch side on mobile
   }
 
   &__arrow {
     /* update custom props with js to update the direction */
     --direction: 0deg;
-    --size: 1rem;
+    --size: 0.75rem;
     // height: 3rem;
     height: calc(
       var(--size) * 3
@@ -176,6 +168,12 @@ a {
 }
 
 .unit {
+  @media (max-width: 900px) {
+    position: absolute;
+    top: 1.5em;
+    left: 2em; // same as the padding in container ('current-weather')
+  }
+
   grid-column: 3 / 4;
   place-self: end;
   color: var(--cl-light);
@@ -243,6 +241,7 @@ a {
 }
 
 .previous-weather {
+  display: none;
   background: var(--cl-light);
   color: var(--cl-dark);
   position: absolute;
@@ -360,6 +359,85 @@ a {
     margin-top: 1em;
     &:hover {
       background: var(--cl-gray);
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .unit {
+    top: 3em;
+  }
+
+  .mars-current-weather {
+    margin: 1em;
+    row-gap: 2em;
+  }
+  .mars-current-weather {
+    display: grid;
+    grid-template-columns: repeat(2fr);
+  }
+  .date {
+    grid-column: 1 / -1;
+  }
+
+  .temp {
+    grid-column: 1 / 2;
+    padding: 0;
+  }
+
+  .wind {
+    grid-column: 2 / 3;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --fz-h1: 1.5rem;
+    --fz-h2: 2.25rem;
+    --fz-body: 1rem;
+    --fz-xl: 4.5rem;
+  }
+  body {
+    // only because it's an SPA!
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .mars-current-weather {
+    margin: 4em 0 0 4em; // ! not centering
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2em;
+    padding: 2em; // was adding 6em top for mobile
+  }
+  .date {
+    grid-column: 1 / 2;
+  }
+
+  .temp {
+    grid-column: 2 / 3;
+    border-left: var(--border);
+    border-right: var(--border);
+    // same as grid 'gap' to be consistent with the space before & after temp section.
+    padding: 0 2em;
+  }
+  .wind {
+    grid-column: 3 / 4;
+    .section-title,
+    .reading {
+      grid-column: 2 / 3;
+    }
+
+    &__direction {
+      // make it span two rows created by assigning the same columns to title and reading
+      grid-row: 1 / span 2; // you can't have 1 / -1 here because we didn't predefine grid-template-rows
+      /* If you want circle | square this makes it easier to adjust the value in one place. */
+      --size: 6rem; // circle diameter
+      grid-column: 1 / 2;
+    }
+
+    &__arrow {
+      --size: 1rem;
     }
   }
 }
