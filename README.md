@@ -1,5 +1,7 @@
 # Mars Weather App - HTML & CSS
 
+[Live Demo](https://mars-weahter-app-toypiano.netlify.app/)
+
 ## Developing an App: User-oriented & cost-efficient workflow
 
 1. Find useful (free) API (eg. weather, market info, stats, map,...)
