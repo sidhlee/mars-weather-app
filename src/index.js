@@ -1,6 +1,6 @@
 import './styles/main.scss';
 
-const API_KEY = 'DEMO_KEY';
+const API_KEY = 'WC25U7VvIOBmrnbZa7DQdj9OK0xyubpbL5H5ZKbX';
 const API_URL = `https://api.nasa.gov/insight_weather/?api_key=${API_KEY}&feedtype=json&ver=1.0`;
 
 // DOM selectors: main
@@ -51,13 +51,20 @@ function getWeather() {
       const { sol_keys, validity_checks, ...solData } = data;
 
       return Object.entries(solData).map(([sol, data]) => {
+        console.log(data);
         return {
           sol: sol,
           maxTemp: data.AT.mx,
           minTemp: data.AT.mn,
-          windSpeed: data.HWS.av,
-          windDirectionDegrees: data.WD.most_common.compass_degrees,
-          windDirectionCardinal: data.WD.most_common.compass_point, // for screen readers
+          // sometimes HWS not available
+          windSpeed: data.HWS ? data.HWS.av : null,
+          // sometimes most_common has null
+          windDirectionDegrees: data.WD.most_common
+            ? data.WD.most_common.compass_degrees
+            : null,
+          windDirectionCardinal: data.WD.most_common
+            ? data.WD.most_common.compass_point
+            : null, // for screen readers
           date: new Date(data.First_UTC),
         };
       });
@@ -181,6 +188,10 @@ function displayTemperature(temperature) {
 }
 
 function displaySpeed(speed) {
+  if (!speed) {
+    return 'N/A';
+  }
+
   let returnSpeed = speed;
   if (!state.isMetric) {
     returnSpeed = speed / 1.609;
