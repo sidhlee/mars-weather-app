@@ -1,7 +1,6 @@
 import './styles/main.scss';
 
-const API_KEY = 'WC25U7VvIOBmrnbZa7DQdj9OK0xyubpbL5H5ZKbX';
-const API_URL = `https://api.nasa.gov/insight_weather/?api_key=${API_KEY}&feedtype=json&ver=1.0`;
+const API_URL = `https://api.nasa.gov/insight_weather/?api_key=${process.env.API_KEY}&feedtype=json&ver=1.0`;
 
 // DOM selectors: main
 const currentSolElement = document.querySelector('[data-current-sol]');
@@ -51,7 +50,6 @@ function getWeather() {
       const { sol_keys, validity_checks, ...solData } = data;
 
       return Object.entries(solData).map(([sol, data]) => {
-        console.log(data);
         return {
           sol: sol,
           maxTemp: data.AT.mx,
