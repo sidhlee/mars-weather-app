@@ -52,8 +52,8 @@ function getWeather() {
       return Object.entries(solData).map(([sol, data]) => {
         return {
           sol: sol,
-          maxTemp: data.AT.mx,
-          minTemp: data.AT.mn,
+          maxTemp: data.AT ? data.AT.mx : null,
+          minTemp: data.AT ? data.AT.mn : null,
           // sometimes HWS not available
           windSpeed: data.HWS ? data.HWS.av : null,
           // sometimes most_common has null
@@ -178,6 +178,9 @@ function displayDate(date) {
 }
 
 function displayTemperature(temperature) {
+  if (!temperature) {
+    return 'N/A';
+  }
   let returnTemp = temperature;
   if (!state.isMetric) {
     returnTemp = (temperature - 32) * (5 / 9);
